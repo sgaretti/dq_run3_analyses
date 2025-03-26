@@ -115,17 +115,27 @@ void plot_results() {
     vector<double> statratioRun2 = {0.0020, 0.0022, 0.0026, 0.0028};
     vector<double> systratioRun2 = {0.0027, 0.0021, 0.0017, 0.0024};
 
-    vector<double> ratioRun3 = {0.0076, 0.0089, 0.0084, 0.0107};
+    //Medium MC syst
+    vector<double> ratioRun3 = {0.0073, 0.0090, 0.0081, 0.0112};
     vector<double> statratioRun3 = {0.0018, 0.0022, 0.0026, 0.0028};
-    vector<double> systratioRun3 = {0.0006, 0.0006, 0.0013, 0.0013};
+    vector<double> systratioRun3 = {0.001014, 0.000730, 0.001412, 0.001227};
+
+    vector<double> ratiopp = {0.0200823};
+    double ratiopp_double = 0.0200823;
+    vector<double> statratiopp = {0.000792887};
+    double statratiopp_double = 0.000792887;
+    vector<double> systratiopp = {0.00177286};
+    double systratiopp_double = 0.00177286;
+    Double_t Npart_data_pp[1] = {2};
     
     Double_t Npart_data_Run2[4] = {316.7, 167.4, 77.74, 25.0};
     Double_t Npart_data[4] = {309.7, 159.4, 70.74, 18.0};
-    Double_t Npart_data_error[4] = {0, 0, 0, 0};
+    Double_t Npart_data_error[4] = { 0, 0, 0, 0};
 
     vector<double> Npart_data_vector = {309.7, 159.4, 70.74, 18.0};
     vector<double> Npart_data_vector_Run2 = {316.7, 167.4, 77.74, 25.0};
     vector<double> Npart_data_vector_error = {0, 0, 0, 0};
+    vector<double> Npart_data_vector_error_Run2 = {0, 0, 0, 0};
 
     TGraphErrors *graRun2 = new TGraphErrors(4, Npart_data_Run2, &ratioRun2[0], 0, &statratioRun2[0]);
     graRun2->SetMarkerStyle(20);
@@ -137,12 +147,17 @@ void plot_results() {
     graRun3->SetMarkerColor(kRed);
     graRun3->SetLineColor(kRed);
 
+    TGraphErrors *graPP = new TGraphErrors(1, Npart_data_pp, &ratiopp[0], 0, &statratiopp[0]);
+    graPP->SetMarkerStyle(20);
+    graPP->SetMarkerColor(kGreen+3);
+    graPP->SetLineColor(kGreen+3);
+
 
     // Creazione Canvas
     TCanvas *canvasPsi2sToJpsiRatioVsNpart = new TCanvas("canvasPsi2sToJpsiRatioVsNpart", "", 800, 600);
     canvasPsi2sToJpsiRatioVsNpart -> SetTicks(1, 1);
 
-    TH2D *histGridV2JpsiVsPtRun2VsRun3 = new TH2D("histGridV2JpsiVsPtRun2VsRun3", "", 100, 0, 400, 100, 0, 0.025);
+    TH2D *histGridV2JpsiVsPtRun2VsRun3 = new TH2D("histGridV2JpsiVsPtRun2VsRun3", "", 100, -10, 400, 100, 0, 0.025);
     histGridV2JpsiVsPtRun2VsRun3 -> GetXaxis() -> SetTitle("<#it{N}_{part}>");
     histGridV2JpsiVsPtRun2VsRun3 -> GetYaxis() -> SetTitle("BR_{#psi(2S)#rightarrow#mu^{+}#mu^{-}} #sigma_{#psi(2S)} / BR_{J/#psi#rightarrow#mu^{+}#mu^{-}} #sigma_{J/#psi}");
     histGridV2JpsiVsPtRun2VsRun3 -> GetYaxis() -> SetTitleOffset(1.6);
@@ -152,25 +167,34 @@ void plot_results() {
     graTamuHighPsi2sToJpsiRatioVsNpart -> Draw("L SAME");
     graShmCor1Psi2sToJpsiRatioVsNpart -> Draw("L SAME");
     graShmCor2Psi2sToJpsiRatioVsNpart -> Draw("L SAME");
-    PlotSystErrors(Npart_data_vector_Run2, 5, ratioRun2, systratioRun2, kBlue);
-    PlotSystErrors(Npart_data_vector, 5, ratioRun3, systratioRun3, kRed);
+    PlotSystErrors(Npart_data_vector_Run2, 4, ratioRun2, systratioRun2, kBlue);
+    PlotSystErrors(Npart_data_vector, 4, ratioRun3, systratioRun3, kRed);
+    double ylow = ratiopp_double - systratiopp_double;
+    double yhigh = ratiopp_double + systratiopp_double;
+    TBox *box = new TBox(-2, ylow, 6, yhigh);
+    box->SetFillStyle(0);
+    box->SetLineColor(kGreen+3);
+    box->SetLineWidth(2);
+    box->Draw("same");
     graRun2->Draw("P SAME");
     graRun3->Draw("P SAME");
+    graPP->Draw("P SAME");
     graShmCor1Psi2sToJpsiRatioVsNpart -> Draw("L SAME");
     graShmCor2Psi2sToJpsiRatioVsNpart -> Draw("L SAME");
 
     TLegend *legendPsi2sToJpsiRatioVsNpart = new TLegend(0.55, 0.65, 0.90, 0.90, " ", "brNDC");
     SetLegend(legendPsi2sToJpsiRatioVsNpart);
-    legendPsi2sToJpsiRatioVsNpart->SetTextSize(0.04);
-    legendPsi2sToJpsiRatioVsNpart->SetEntrySeparation(0.06); 
+    legendPsi2sToJpsiRatioVsNpart->SetTextSize(0.03);
+    legendPsi2sToJpsiRatioVsNpart->SetEntrySeparation(0.03); 
     legendPsi2sToJpsiRatioVsNpart -> AddEntry(graTamuPsi2sToJpsiRatioVsNpart, "TAMU, #sqrt{#it{s}_{NN}} = 5.02 TeV", "F");
     legendPsi2sToJpsiRatioVsNpart -> AddEntry(graShmCor1Psi2sToJpsiRatioVsNpart, "SHMc, #sqrt{#it{s}_{NN}} = 5.02 TeV", "L");
     legendPsi2sToJpsiRatioVsNpart -> AddEntry(graRun2, "Run 2, #sqrt{#it{s}_{NN}} = 5.02 TeV", "P");
     legendPsi2sToJpsiRatioVsNpart -> AddEntry(graRun3, "Run 3, #sqrt{#it{s}_{NN}} = 5.36 TeV", "P");
+    legendPsi2sToJpsiRatioVsNpart -> AddEntry(graPP, "Extr. pp, #sqrt{#it{s}} = 5.36 TeV", "P");
     legendPsi2sToJpsiRatioVsNpart -> Draw();
 
 
-    canvasPsi2sToJpsiRatioVsNpart -> SaveAs("Psi2S_to_Jpsi_ratio_vs_npart.pdf");
+    canvasPsi2sToJpsiRatioVsNpart -> SaveAs("Psi2S_to_Jpsi_ratio_vs_npart_Fin.pdf");
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
